@@ -32,7 +32,7 @@ Mosquitto (MQTT 브로커, infra/mosquitto)
 | `infra/` | MQTT 브로커, InfluxDB, FastAPI API 서버 설정 및 실행 코드 (`docker-compose.yml`) |
 | `data/` | 라벨별 학습용 CSV 데이터 (`fall`, `sit`, `walk`, `empty`) |
 | `archive_tests/` | 초기 프로토타입 및 테스트용 스크립트 |
-| `web/` | 정적 프론트엔드 데모 페이지 (`intro.html` 소개 페이지, `console.html` 모니터링 콘솔) |
+| `web/` | 정적 프론트엔드 데모 페이지 (`index.html` 소개 페이지, `console.html` 모니터링 콘솔) — Cloudflare Pages 배포 대상 |
 
 ## 준비 사항
 
@@ -86,9 +86,24 @@ uvicorn infra.api_server:app --reload   # /current-status API 제공
 
 ## 프론트엔드 데모 (`web/`)
 
-- `web/intro.html`: 서비스 소개 페이지 (와이파이 CSI 기반 낙상 감지 컨셉 설명).
+- `web/index.html`: 서비스 소개 페이지 (와이파이 CSI 기반 낙상 감지 컨셉 설명).
 - `web/console.html`: 실제 서비스 모니터링 콘솔 데모 — 사이드바로 전환되는 5개 화면(모니터링/신호 뷰어/이벤트 로그/알림/모델 리포트)으로 구성되며, 모델 리포트 화면의 정확도·recall·클래스별 지표는 위 `train_model.py` 실측치를 그대로 반영했습니다.
 - 두 페이지 모두 정적 HTML/CSS/JS만으로 동작하며 별도 빌드 과정 없이 브라우저로 바로 열립니다. 외부 리소스는 Google Fonts, Tailwind Play CDN(`console.html`)만 사용합니다.
+- 두 페이지는 상대 경로(`index.html` ↔ `console.html`)로 서로 링크되어 있어, 아래처럼 `web/`를 정적 사이트로 배포하면 그대로 작동합니다.
+
+### Cloudflare Pages 배포 설정
+
+Cloudflare Pages의 "Git에 연결" 흐름에서 아래 값을 그대로 입력하면 됩니다.
+
+| 항목 | 값 |
+|---|---|
+| 프레임워크 프리셋 | `없음 (None)` |
+| 빌드 명령 | *(비워둠)* — 정적 HTML이라 빌드 과정이 없음 |
+| 빌드 출력 디렉터리 | `web` |
+| 루트 디렉터리(고급) | `/` (기본값 그대로) |
+| 환경 변수 | 필요 없음 |
+
+배포되면 `https://ether-care.pages.dev/`가 `web/index.html`(소개 페이지)을, `https://ether-care.pages.dev/console.html`이 모니터링 콘솔을 보여줍니다.
 
 ## 참고
 
