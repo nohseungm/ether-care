@@ -5,7 +5,7 @@ import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report
 
-from features import FeatureExtractor, FEATURE_COLUMNS, CSI_COLUMNS
+from features import FeatureExtractor, FEATURE_COLUMNS, CSI_COLUMNS, FALL_THRESHOLD, predict_with_fall_threshold
 
 # -----------------------------------
 # [1] 기본 경로 설정
@@ -88,6 +88,13 @@ def train():
 
     # 행동별 상세 채점 결과 출력
     print(classification_report(y_test, y_pred))
+
+    # 낙상 recall 우선 임계값 적용 시 결과도 함께 출력 (낙상을 놓치는 비용이
+    # 오탐 비용보다 크므로, 실제 서비스에서는 이 기준으로 알림을 트리거함)
+    y_proba = model.predict_proba(X_test)
+    y_pred_biased = predict_with_fall_threshold(y_proba, model.classes_)
+    print(f"--- 낙상 recall 우선 (threshold={FALL_THRESHOLD}) ---")
+    print(classification_report(y_test, y_pred_biased))
 
     # 학습 완료된 모델 파일로 저장
     joblib.dump(model, MODEL_PATH)

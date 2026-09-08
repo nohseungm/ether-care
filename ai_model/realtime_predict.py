@@ -7,7 +7,7 @@ import os
 import sys
 import time
 
-from features import FeatureExtractor, FEATURE_COLUMNS
+from features import FeatureExtractor, FEATURE_COLUMNS, predict_with_fall_threshold
 
 # 자잘한 경고 숨기기
 warnings.filterwarnings("ignore")
@@ -39,7 +39,9 @@ def predict_action(client, userdata, message):
             # 학습 때와 동일한 FeatureExtractor로 단기/장기 변동성 특징 계산
             feature_row = extractor.transform(raw_wave)
             df = pd.DataFrame([feature_row], columns=FEATURE_COLUMNS)
-            prediction = model.predict(df)[0]
+            proba = model.predict_proba(df)
+            # 낙상을 놓치는 비용이 오탐 비용보다 크므로 recall 우선 임계값 적용
+            prediction = predict_with_fall_threshold(proba, model.classes_)[0]
 
             # 결과 출력
             if prediction == "fall":

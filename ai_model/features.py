@@ -16,6 +16,9 @@ WINDOW_COLUMNS = [
 ]
 FEATURE_COLUMNS = CSI_COLUMNS + WINDOW_COLUMNS
 
+FALL_LABEL = "fall"
+FALL_THRESHOLD = 0.35  # 낙상 놓치는 비용이 오탐 비용보다 크므로 recall 우선 임계값
+
 
 class FeatureExtractor:
     """CSI 프레임을 (원본 128값 + 단기/장기 변동성 윈도우 통계) 벡터로 변환.
@@ -62,3 +65,14 @@ class FeatureExtractor:
     def reset(self):
         self.std_buf.clear()
         self.ptp_buf.clear()
+
+
+def predict_with_fall_threshold(proba, classes, threshold=FALL_THRESHOLD):
+    """예측 확률 행렬(proba, [n_samples, n_classes])에서 클래스를 뽑되,
+    fall 확률이 threshold를 넘기면 다른 클래스가 더 높아도 fall로 판정한다.
+    """
+    fall_idx = list(classes).index(FALL_LABEL)
+    argmax_idx = np.argmax(proba, axis=1)
+    fall_wins = proba[:, fall_idx] >= threshold
+    idx = np.where(fall_wins, fall_idx, argmax_idx)
+    return np.asarray(classes)[idx]
