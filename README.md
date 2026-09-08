@@ -64,6 +64,8 @@ python ai_model/train_model.py
 
 `data/ether_care_data_standard/`의 CSV들을 읽어 RandomForest 분류기를 학습하고, `ai_model/ether_care_model.pkl`로 저장합니다.
 
+특징(feature)은 `ai_model/features.py`의 `FeatureExtractor`에서 계산하며, 학습(`train_model.py`)과 실시간 추론(`realtime_predict.py`)이 동일한 로직을 공유합니다. 원본 128개 CSI 값에 더해, 단기(8프레임)·장기(30프레임) 이동 윈도우의 표준편차/피크투피크(peak-to-peak) 통계를 함께 사용합니다 — 낙상은 짧은 순간의 스파이크, 걷기는 지속적인 중간 크기 변동이라는 차이를 잡아내기 위함입니다. 시간순 분할(각 라벨 녹화의 마지막 20%를 시험 데이터로 사용) 기준 정확도는 **90.29%**입니다 (기존 순정 단일 프레임 방식은 동일 기준 87.17%).
+
 ### 4. 실시간 낙상 감지
 
 ```bash

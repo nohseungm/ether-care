@@ -7,6 +7,8 @@ import os
 import sys
 import time
 
+from features import FeatureExtractor, FEATURE_COLUMNS
+
 # 자잘한 경고 숨기기
 warnings.filterwarnings("ignore")
 
@@ -20,8 +22,9 @@ if not os.path.exists(MODEL_PATH):
     sys.exit()
 
 print("========================================")
-print("🧠 실시간 감지 AI (순정 미인 모드) 로딩 중...")
+print("🧠 실시간 감지 AI (윈도우 특징 강화 모드) 로딩 중...")
 model = joblib.load(MODEL_PATH)
+extractor = FeatureExtractor()
 print("✅ 로딩 완료! 감지 시작 (종료: Ctrl + C)")
 print("========================================")
 
@@ -33,8 +36,9 @@ def predict_action(client, userdata, message):
         raw_wave = data.get("csi_data", [])
 
         if len(raw_wave) == 128:
-            # 🌟 필터나 묶음(Window) 없이 들어온 날것 그대로 바로 예측!
-            df = pd.DataFrame([raw_wave], columns=[f"csi_{i}" for i in range(128)])
+            # 학습 때와 동일한 FeatureExtractor로 단기/장기 변동성 특징 계산
+            feature_row = extractor.transform(raw_wave)
+            df = pd.DataFrame([feature_row], columns=FEATURE_COLUMNS)
             prediction = model.predict(df)[0]
 
             # 결과 출력
