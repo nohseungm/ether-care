@@ -1,0 +1,64 @@
+import pandas as pd
+import glob
+import os
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# -----------------------------------
+# [1] 기본 경로 설정
+# -----------------------------------
+DATA_DIR = "C:/Users/aa378/ether_care_data_standard"
+MODEL_PATH = "C:/Users/aa378/ether_care_model.pkl"
+
+
+def train():
+    print("========================================")
+    print("🧠 [AI 학습 시스템] 순정(Raw) 데이터 모드 시작")
+    print("========================================")
+
+    all_files = glob.glob(os.path.join(DATA_DIR, "training_data_*.csv"))
+    if not all_files:
+        print("❌ [에러] CSV 파일 없음!")
+        return
+
+    df_list = []
+    for filename in all_files:
+        try:
+            df = pd.read_csv(filename)
+            if df.empty: continue
+            df_list.append(df)
+            label = os.path.basename(filename).replace("training_data_", "").replace(".csv", "")
+            print(f"   - 읽기 완료: {label} ({len(df)}줄)")
+        except Exception:
+            pass
+
+    full_data = pd.concat(df_list, ignore_index=True)
+
+    # 🌟 필터링 없이 날것의 데이터(X) 그대로 사용!
+    X = full_data.filter(like="csi_")
+    y = full_data["label"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+
+    print("\n🤖 AI 두뇌 학습 중... (생얼 미인 모드)")
+    model = RandomForestClassifier(n_estimators=200, random_state=42)
+    model.fit(X_train, y_train)
+
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+
+    print("\n========================================")
+    print(f"🎓 최종 시험 점수: {acc * 100:.2f}% (87% 복구 목표!)")
+    print("========================================")
+    print(classification_report(y_test, y_pred))
+
+    joblib.dump(model, MODEL_PATH)
+    print("💾 [저장 완료] 순정 모델 저장 완료!")
+
+
+if __name__ == "__main__":
+    train()
