@@ -32,6 +32,7 @@ Mosquitto (MQTT 브로커, infra/mosquitto)
 | `infra/` | MQTT 브로커, InfluxDB, FastAPI API 서버 설정 및 실행 코드 (`docker-compose.yml`) |
 | `data/` | 라벨별 학습용 CSV 데이터 (`fall`, `sit`, `walk`, `empty`) |
 | `archive_tests/` | 초기 프로토타입 및 테스트용 스크립트 |
+| `web/` | 정적 프론트엔드 데모 페이지 (`intro.html` 소개 페이지, `console.html` 모니터링 콘솔) |
 
 ## 준비 사항
 
@@ -82,6 +83,12 @@ python ai_model/realtime_predict.py
 python infra/save_to_db.py       # MQTT 데이터를 InfluxDB에 저장
 uvicorn infra.api_server:app --reload   # /current-status API 제공
 ```
+
+## 프론트엔드 데모 (`web/`)
+
+- `web/intro.html`: 서비스 소개 페이지 (와이파이 CSI 기반 낙상 감지 컨셉 설명).
+- `web/console.html`: 실제 서비스 모니터링 콘솔 데모 — 사이드바로 전환되는 5개 화면(모니터링/신호 뷰어/이벤트 로그/알림/모델 리포트)으로 구성되며, 모델 리포트 화면의 정확도·recall·클래스별 지표는 위 `train_model.py` 실측치를 그대로 반영했습니다.
+- 두 페이지 모두 정적 HTML/CSS/JS만으로 동작하며 별도 빌드 과정 없이 브라우저로 바로 열립니다. 외부 리소스는 Google Fonts, Tailwind Play CDN(`console.html`)만 사용합니다.
 
 ## 참고
 

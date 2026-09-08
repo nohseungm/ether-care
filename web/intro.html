@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ether‑Care</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gothic+A1:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,300..500,0..1&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --ink:#0a0d13;
+    --surface:#11151f;
+    --surface-raised:#1a2030;
+    --surface-card:#161c29;
+    --surface-card-hi:#1d2436;
+    --hairline: rgba(244,246,251,0.09);
+    --hairline-strong: rgba(244,246,251,0.16);
+    --text-primary:#f4f6fb;
+    --text-secondary:#9aa3b8;
+    --text-muted:#6b7385;
+    --brand:#8b7cf6;
+    --brand-strong:#ab9fff;
+    --brand-ink:#1c1435;
+    --brand-soft: rgba(139,124,246,0.16);
+    --state-good:#22b356;
+    --state-good-soft: rgba(34,179,86,0.15);
+    --state-info:#3987e5;
+    --state-info-soft: rgba(57,135,229,0.16);
+    --state-critical:#e0453f;
+    --state-critical-soft: rgba(224,69,63,0.16);
+    --state-neutral:#6b7385;
+    --state-neutral-soft: rgba(107,115,133,0.16);
+    --font-display:'Gowun Batang', 'Nanum Myeongjo', serif;
+    --font-body:'Gothic A1', 'Apple SD Gothic Neo', system-ui, sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:var(--ink);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--font-display); text-wrap:balance; margin:0; color:var(--text-primary); font-weight:700;}
+  p{margin:0;}
+  a{color:inherit; text-decoration:none;}
+  ul,ol,dl{margin:0; padding:0; list-style:none;}
+  button{font:inherit; color:inherit; background:none; border:none; cursor:pointer;}
+  :focus-visible{outline:2px solid var(--brand-strong); outline-offset:3px; border-radius:4px;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; line-height:1; vertical-align:middle;}
+  .mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+
+  .page{max-width:1180px; margin:0 auto; padding:0 28px;}
+  .bleed{background:var(--surface);}
+
+  /* ---------- nav ---------- */
+  .nav-bar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(10,13,19,0.82); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hairline);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1180px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-weight:600; font-size:16px; letter-spacing:0.02em;}
+  .brand-mark{width:26px; height:26px; flex:none;}
+  .brand-badge{
+    font-family:var(--font-mono); font-size:10px; letter-spacing:0.06em; color:var(--brand-strong);
+    background:var(--brand-soft); border:1px solid rgba(139,124,246,0.35);
+    padding:2px 7px; border-radius:999px; margin-left:2px;
+  }
+  .nav-links{display:flex; align-items:center; gap:28px; font-size:14px; color:var(--text-secondary);}
+  .nav-links a:hover{color:var(--text-primary);}
+  .nav-cta{
+    font-size:13px; font-weight:600; color:var(--ink); background:var(--text-primary);
+    padding:9px 16px; border-radius:999px; transition:transform .15s ease, background .15s ease;
+    white-space:nowrap;
+  }
+  .nav-cta:hover{background:var(--brand-strong); color:var(--brand-ink);}
+  @media (max-width:760px){ .nav-links{display:none;} }
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex; align-items:center; gap:6px; padding:13px 22px; border-radius:999px; font-size:15px; font-weight:600; transition:transform .15s ease, box-shadow .15s ease, background .15s ease; white-space:nowrap;}
+  .btn:active{transform:scale(0.97);}
+  .btn .material-symbols-outlined{font-size:18px;}
+  .btn--brand{background:var(--brand); color:#fff; box-shadow:0 8px 24px -8px rgba(139,124,246,0.55);}
+  .btn--brand:hover{background:var(--brand-strong);}
+  .btn--outline{border:1px solid var(--hairline-strong); color:var(--text-primary);}
+  .btn--outline:hover{border-color:var(--brand); color:var(--brand-strong);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+    padding:76px 0 88px; position:relative;
+  }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.04em; color:var(--text-muted);
+    display:flex; align-items:center; gap:8px; margin-bottom:22px;
+  }
+  .eyebrow .sep{color:var(--hairline-strong);}
+  .hero h1{
+    font-size:clamp(34px,4.4vw,52px); line-height:1.28; letter-spacing:-0.01em; font-weight:700;
+    margin-bottom:22px;
+  }
+  .hero h1 em{font-style:normal; color:var(--brand-strong);}
+  .lede{font-size:17px; line-height:1.75; color:var(--text-secondary); max-width:46ch; margin-bottom:32px;}
+  .hero__cta{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:44px;}
+  .hero__facts{display:flex; gap:32px; border-top:1px solid var(--hairline); padding-top:24px;}
+  .hero__facts>div{display:flex; flex-direction:column; gap:4px;}
+  .hero__facts dt{font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--text-primary);}
+  .hero__facts dd{font-size:12.5px; color:var(--text-muted);}
+
+  .hero__visual{position:relative; display:flex; justify-content:center; align-items:center; min-height:640px;}
+  .signal-rings{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:0;}
+  .signal-rings span{
+    position:absolute; border-radius:50%; border:1px solid rgba(139,124,246,0.3);
+    width:120px; height:120px;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .signal-rings span{animation:ring 3.6s cubic-bezier(.2,.7,.3,1) infinite;}
+    .signal-rings span:nth-child(2){animation-delay:1.2s;}
+    .signal-rings span:nth-child(3){animation-delay:2.4s;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .signal-rings span{width:280px; height:280px; opacity:.16;}
+  }
+  @keyframes ring{
+    0%{width:90px; height:90px; opacity:.7;}
+    100%{width:520px; height:520px; opacity:0;}
+  }
+
+  /* ---------- phone mockup ---------- */
+  .phone{
+    position:relative; z-index:1; width:340px; border-radius:40px; padding:10px;
+    background:linear-gradient(180deg,#232b40,#151b29);
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  }
+  .phone__screen{
+    background:var(--surface-card); border-radius:32px; overflow:hidden;
+    display:flex; flex-direction:column; min-height:600px;
+  }
+  .phone-statusbar{display:flex; justify-content:space-between; align-items:center; padding:14px 22px 4px; font-family:var(--font-mono); font-size:14px; font-weight:600;}
+  .phone-status-icons{display:flex; gap:6px; align-items:center;}
+  .phone-status-icons .material-symbols-outlined{font-size:15px;}
+  .phone-appbar{display:flex; justify-content:space-between; align-items:center; padding:10px 20px 16px; border-bottom:1px solid var(--hairline);}
+  .phone-brand{display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-weight:600; font-size:13.5px;}
+  .phone-brand svg{width:16px; height:16px;}
+  .phone-live{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--state-good);}
+  .live-dot{width:7px; height:7px; border-radius:50%; background:var(--state-good); box-shadow:0 0 0 3px var(--state-good-soft);}
+  @media (prefers-reduced-motion:no-preference){ .live-dot{animation:pulse-dot 2s ease-in-out infinite;} }
+  @keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+  .phone-body{flex:1; padding:18px 18px 6px; display:flex; flex-direction:column; gap:16px;}
+  .device-row{display:flex; align-items:center; gap:10px; color:var(--text-secondary);}
+  .device-row .material-symbols-outlined{font-size:19px; color:var(--text-muted);}
+  .device-name{font-size:13px; font-weight:600; color:var(--text-primary);}
+  .device-sub{font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);}
+
+  .status-card{border-radius:20px; padding:18px; position:relative; overflow:hidden;}
+  .status-card--critical{background:linear-gradient(165deg,#3a1416,#241014); border:1px solid rgba(224,69,63,0.4);}
+  .status-card__top{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .status-card__icon{font-size:26px; color:var(--state-critical);}
+  .status-pill{font-family:var(--font-mono); font-size:10px; letter-spacing:0.08em; color:#ffd6d3; background:rgba(224,69,63,0.28); padding:3px 9px; border-radius:999px;}
+  .status-card__label{font-family:var(--font-display); font-size:26px; font-weight:700; color:#fff; margin-bottom:6px;}
+  .status-card__meta{font-family:var(--font-mono); font-size:11.5px; color:#e7b9b7; margin-bottom:16px;}
+  .status-card__metrics{display:flex; gap:22px; padding:14px 0; border-top:1px solid rgba(255,255,255,0.1); border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:16px;}
+  .metric-value{display:block; font-family:var(--font-mono); font-size:20px; font-weight:600; color:#fff;}
+  .metric-label{display:block; font-size:10.5px; color:#e7b9b7; margin-top:2px;}
+  .status-card__actions{display:flex; gap:8px;}
+  .status-card__actions .btn{flex:1; justify-content:center; padding:11px 10px; font-size:12.5px;}
+  .btn--ghost-critical{background:rgba(255,255,255,0.08); color:#fff;}
+  .btn--solid-critical{background:#fff; color:#7a1c19;}
+
+  .timeline{padding-top:2px;}
+  .timeline__title{font-size:11.5px; font-weight:600; color:var(--text-muted); letter-spacing:0.03em; margin-bottom:10px;}
+  .timeline__list li{display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--hairline);}
+  .timeline__list li:first-child{border-top:none;}
+  .timeline__list .material-symbols-outlined{font-size:16px; color:var(--text-muted);}
+  .dot{width:7px; height:7px; border-radius:50%; flex:none;}
+  .dot--critical{background:var(--state-critical);}
+  .dot--info{background:var(--state-info);}
+  .dot--good{background:var(--state-good);}
+  .dot--neutral{background:var(--state-neutral);}
+  .t-label{flex:1; font-size:12.5px; color:var(--text-secondary);}
+  .t-time{font-family:var(--font-mono); font-size:11px; color:var(--text-muted);}
+
+  .phone-home-indicator{display:flex; justify-content:center; padding:10px 0 4px;}
+  .phone-home-indicator span{width:120px; height:4px; border-radius:999px; background:rgba(255,255,255,0.35);}
+
+  /* ---------- section chrome ---------- */
+  section{padding:88px 0;}
+  .section-head{max-width:640px; margin-bottom:48px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(26px,3vw,34px); margin-bottom:14px;}
+  .section-head p{color:var(--text-secondary); font-size:15.5px; line-height:1.7; max-width:56ch;}
+
+  /* ---------- pipeline ---------- */
+  .pipeline__steps{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative;
+  }
+  .pipeline__steps::before{
+    content:""; position:absolute; top:19px; left:6%; right:6%; height:1px;
+    background:repeating-linear-gradient(90deg, var(--hairline-strong) 0 8px, transparent 8px 16px);
+  }
+  .pipeline__step{position:relative; padding:0 18px 0 0; display:flex; flex-direction:column; gap:12px;}
+  .step-no{
+    font-family:var(--font-mono); font-size:12px; color:var(--ink); background:var(--brand-strong);
+    width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:700; position:relative; z-index:1;
+  }
+  .pipeline__step h3{font-size:17px; font-weight:700; font-family:var(--font-body);}
+  .pipeline__step p{font-size:13.5px; color:var(--text-secondary); line-height:1.65;}
+  .pipeline__step code{font-family:var(--font-mono); font-size:12px; color:var(--brand-strong); background:var(--brand-soft); padding:1px 6px; border-radius:5px;}
+  @media (max-width:900px){
+    .pipeline__steps{grid-template-columns:1fr 1fr; row-gap:36px;}
+    .pipeline__steps::before{display:none;}
+  }
+  @media (max-width:560px){ .pipeline__steps{grid-template-columns:1fr;} }
+
+  /* ---------- metrics ---------- */
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:14px; overflow:hidden; margin-bottom:32px;}
+  .stat-tile{background:var(--surface-card); padding:24px 22px;}
+  .stat-tile .value{font-family:var(--font-mono); font-size:30px; font-weight:600; color:var(--text-primary); display:block;}
+  .stat-tile .value small{font-size:16px; color:var(--text-muted); font-weight:500;}
+  .stat-tile .label{font-size:13px; color:var(--text-secondary); margin-top:6px; display:block;}
+  .stat-tile .delta{font-family:var(--font-mono); font-size:11.5px; color:var(--state-good); margin-top:10px; display:flex; align-items:center; gap:4px;}
+  @media (max-width:900px){ .stat-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .stat-grid{grid-template-columns:1fr;} }
+
+  .chart-card{background:var(--surface-card); border:1px solid var(--hairline); border-radius:16px; padding:26px 26px 18px;}
+  .chart-card__head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; flex-wrap:wrap; gap:6px;}
+  .chart-card__head h3{font-size:16px; font-weight:700; font-family:var(--font-body);}
+  .chart-card__note{font-family:var(--font-mono); font-size:11px; color:var(--text-muted);}
+  .chart-card__caption{font-size:12.5px; color:var(--text-muted); margin-top:8px;}
+  #csiChart{width:100%; height:auto; overflow:visible;}
+  .grid-line{stroke:var(--hairline);}
+  .axis-label{fill:var(--text-muted); font-family:var(--font-mono);}
+  #csiArea{fill:var(--state-info-soft);}
+  #csiLine{stroke:var(--state-info);}
+  #fallGuide{stroke:var(--state-critical);}
+  #fallDot{fill:var(--state-critical); stroke:var(--surface-card);}
+  #fallLabel{fill:var(--state-critical); font-family:var(--font-mono);}
+  #hoverLine{stroke:var(--hairline-strong);}
+  #hoverDot{fill:var(--state-info); stroke:var(--surface-card);}
+  .chart-tooltip{
+    position:absolute; pointer-events:none; background:var(--surface-raised); border:1px solid var(--hairline-strong);
+    border-radius:8px; padding:6px 10px; font-family:var(--font-mono); font-size:11.5px; color:var(--text-primary);
+    transform:translate(-50%,-120%); opacity:0; transition:opacity .1s ease; white-space:nowrap; z-index:5;
+  }
+  .chart-wrap{position:relative;}
+
+  /* ---------- privacy / compare ---------- */
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:16px; overflow:hidden;}
+  .compare__col{background:var(--surface-card); padding:30px 28px;}
+  .compare__col h3{font-size:15px; font-family:var(--font-mono); font-weight:600; letter-spacing:0.02em; margin-bottom:20px; color:var(--text-secondary);}
+  .compare__col--new h3{color:var(--brand-strong);}
+  .compare__col li{display:flex; align-items:flex-start; gap:10px; padding:11px 0; border-top:1px solid var(--hairline); font-size:14px; line-height:1.6; color:var(--text-secondary);}
+  .compare__col li:first-child{border-top:none;}
+  .compare__col .material-symbols-outlined{font-size:18px; flex:none; margin-top:1px;}
+  .compare__col--old .material-symbols-outlined{color:var(--state-neutral);}
+  .compare__col--new .material-symbols-outlined{color:var(--state-good);}
+  .compare__col--new li{color:var(--text-primary);}
+  @media (max-width:760px){ .compare{grid-template-columns:1fr;} }
+
+  /* ---------- footer ---------- */
+  .footer{border-top:1px solid var(--hairline); padding:44px 0 56px; display:flex; flex-direction:column; gap:14px;}
+  .footer__row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;}
+  .footer__brand{font-family:var(--font-mono); font-weight:600; font-size:14px; display:flex; align-items:center; gap:8px;}
+  .footer__link{font-size:13px; color:var(--brand-strong); display:flex; align-items:center; gap:4px;}
+  .footer__link .material-symbols-outlined{font-size:16px;}
+  .footer__stack{font-family:var(--font-mono); font-size:12px; color:var(--text-muted);}
+  .footer__note{font-size:12.5px; color:var(--text-muted); max-width:70ch; line-height:1.6;}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr; padding-top:44px;}
+    .hero__visual{min-height:auto; margin-top:8px;}
+    .hero__facts{flex-wrap:wrap; row-gap:16px;}
+  }
+  @media (max-width:480px){
+    .page{padding:0 18px;}
+    .phone{width:100%; max-width:340px;}
+  }
+</style>
+
+</head>
+<body>
+<div class="nav-bar">
+  <nav class="nav">
+    <div class="brand">
+      <svg class="brand-mark" viewbox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="13" cy="13" r="2.4" fill="#8b7cf6"/>
+        <path d="M8 13a5 5 0 0 1 10 0" stroke="#ab9fff" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M4.3 13a8.7 8.7 0 0 1 17.4 0" stroke="#4a3f8f" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      Ether‑Care <span class="brand-badge">MVP v1.0</span>
+    </div>
+    <div class="nav-links">
+      <a href="#pipeline">작동 원리</a>
+      <a href="#metrics">정확도</a>
+      <a href="#privacy">개인정보</a>
+    </div>
+    <a class="nav-cta" href="#metrics">라이브 데모 보기</a>
+  </nav>
+</div>
+
+<main>
+  <div class="page">
+    <section class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">카메라 0대 <span class="sep">·</span> 웨어러블 0개 <span class="sep">·</span> CSI 서브캐리어 128개</p>
+        <h1>카메라가 못 보는 곳까지,<br/>전파는 <em>놓치지</em> 않습니다</h1>
+        <p class="lede">이더케어는 이미 집에 있는 와이파이 신호의 미세한 흔들림 — 채널 상태 정보(CSI) — 만으로 낙상·보행·앉음·부재를 실시간으로 구분합니다. 렌즈도, 몸에 차는 기기도 필요 없습니다.</p>
+        <div class="hero__cta">
+          <a class="btn btn--brand" href="#metrics"><span class="material-symbols-outlined">bolt</span>라이브 대시보드 보기</a>
+          <a class="btn btn--outline" href="#pipeline">작동 원리 알아보기<span class="material-symbols-outlined">arrow_forward</span></a>
+        </div>
+        <dl class="hero__facts">
+          <div><dt>90.29%</dt><dd>4클래스 분류 정확도</dd></div>
+          <div><dt>0.83</dt><dd>낙상 recall (우선 임계값)</dd></div>
+          <div><dt>~12Hz</dt><dd>실시간 CSI 샘플링</dd></div>
+        </dl>
+      </div>
+
+      <div class="hero__visual">
+        <div class="signal-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="phone-statusbar">
+              <span>9:41</span>
+              <div class="phone-status-icons">
+                <span class="material-symbols-outlined">signal_cellular_alt</span>
+                <span class="material-symbols-outlined">wifi</span>
+                <span class="material-symbols-outlined">battery_full</span>
+              </div>
+            </div>
+            <div class="phone-appbar">
+              <div class="phone-brand">
+                <svg viewbox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="13" cy="13" r="2.4" fill="#8b7cf6"/>
+                  <path d="M8 13a5 5 0 0 1 10 0" stroke="#ab9fff" stroke-width="1.6" stroke-linecap="round"/>
+                  <path d="M4.3 13a8.7 8.7 0 0 1 17.4 0" stroke="#4a3f8f" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                Ether‑Care
+              </div>
+              <div class="phone-live"><span class="live-dot"></span>실시간 연결됨</div>
+            </div>
+
+            <div class="phone-body">
+              <div class="device-row">
+                <span class="material-symbols-outlined">router</span>
+                <div>
+                  <div class="device-name">거실 센서 · ESP32-01</div>
+                  <div class="device-sub mono">ether-care/sensor · 128 subcarriers</div>
+                </div>
+              </div>
+
+              <div class="status-card status-card--critical">
+                <div class="status-card__top">
+                  <span class="material-symbols-outlined status-card__icon">warning</span>
+                  <span class="status-pill">CRITICAL</span>
+                </div>
+                <div class="status-card__label">낙상 감지</div>
+                <div class="status-card__meta mono">2026-09-08 09:41:07 · 거실</div>
+                <div class="status-card__metrics">
+                  <div><span class="metric-value">94%</span><span class="metric-label">낙상 확률</span></div>
+                  <div><span class="metric-value">28.7</span><span class="metric-label">CSI 변동성 (σ)</span></div>
+                </div>
+                <div class="status-card__actions">
+                  <button class="btn btn--ghost-critical">알림 해제</button>
+                  <button class="btn btn--solid-critical"><span class="material-symbols-outlined">call</span>보호자에게 전화</button>
+                </div>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline__title">최근 활동</div>
+                <ul class="timeline__list">
+                  <li><span class="dot dot--critical"></span><span class="material-symbols-outlined">warning</span><span class="t-label">낙상 감지</span><span class="t-time mono">09:41:07</span></li>
+                  <li><span class="dot dot--info"></span><span class="material-symbols-outlined">directions_walk</span><span class="t-label">보행</span><span class="t-time mono">09:38:52</span></li>
+                  <li><span class="dot dot--good"></span><span class="material-symbols-outlined">chair</span><span class="t-label">앉음</span><span class="t-time mono">09:35:10</span></li>
+                  <li><span class="dot dot--neutral"></span><span class="material-symbols-outlined">visibility_off</span><span class="t-label">부재중</span><span class="t-time mono">09:20:44</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="phone-home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="bleed" id="pipeline">
+    <div class="page">
+      <section>
+        <div class="section-head">
+          <p class="eyebrow">PIPELINE</p>
+          <h2>센서 하나, 네 단계로 낙상을 압니다</h2>
+          <p>공유기와 센서 사이를 오가는 전파 자체를 데이터로 씁니다. 별도 장비를 몸에 붙이지 않고, 이미 집에 흐르고 있는 신호를 읽습니다.</p>
+        </div>
+        <ol class="pipeline__steps">
+          <li class="pipeline__step">
+            <span class="step-no">01</span>
+            <h3>센서 수집</h3>
+            <p><code>ESP32</code>가 기존 Wi‑Fi 공유기와 통신하며 초당 약 12프레임의 채널 상태 정보(CSI)를 <code>MQTT</code>로 발행합니다.</p>
+          </li>
+          <li class="pipeline__step">
+            <span class="step-no">02</span>
+            <h3>전파 반사 포착</h3>
+            <p>사람이 움직이면 몸에 반사·산란된 전파가 섞이며, 한 프레임의 <code>csi_0…csi_127</code> 128개 값이 미세하게 흔들립니다.</p>
+          </li>
+          <li class="pipeline__step">
+            <span class="step-no">03</span>
+            <h3>AI 분류</h3>
+            <p>원본 128값과 단기·장기 변동성 통계를 함께 본 <code>RandomForest</code>가 낙상·보행·앉음·부재 4가지 상태를 구분합니다.</p>
+          </li>
+          <li class="pipeline__step">
+            <span class="step-no">04</span>
+            <h3>즉시 알림</h3>
+            <p>낙상 확률이 <code>0.35</code>를 넘으면 다른 상태보다 우선해 보호자 앱으로 즉시 푸시합니다.</p>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </div>
+
+  <div class="page" id="metrics">
+    <section>
+      <div class="section-head">
+        <p class="eyebrow">MODEL PERFORMANCE</p>
+        <h2>낙상을 놓치는 것보다, 한 번 더 확인하는 편을 택했습니다</h2>
+        <p>같은 세션의 마지막 20%를 시험 데이터로 떼어 놓는 시간순 분할로 검증했습니다. 기본 판정에서 낙상 recall이 낮게 나와, 낙상 확률 임계값을 낮춰 recall을 우선하도록 조정했습니다.</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile">
+          <span class="value mono">90.29<small>%</small></span>
+          <span class="label">4클래스 분류 정확도</span>
+        </div>
+        <div class="stat-tile">
+          <span class="value mono">0.83</span>
+          <span class="label">낙상 recall</span>
+          <span class="delta"><span class="material-symbols-outlined" style="font-size:13px;">trending_up</span>기존 0.71 → 0.83</span>
+        </div>
+        <div class="stat-tile">
+          <span class="value mono">128</span>
+          <span class="label">서브캐리어 · 프레임</span>
+        </div>
+        <div class="stat-tile">
+          <span class="value mono">0</span>
+          <span class="label">카메라 · 웨어러블 개수</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card__head">
+          <h3>CSI 변동성(σ) 추이 — 낙상 순간의 스파이크</h3>
+          <span class="chart-card__note">예시 데이터 · 실제 학습 데이터 분포 기반</span>
+        </div>
+        <div class="chart-wrap">
+          <svg id="csiChart" viewbox="0 0 640 230" preserveAspectRatio="none">
+            <line class="grid-line" x1="40" y1="30" x2="620" y2="30" stroke-width="1"></line>
+            <line class="grid-line" x1="40" y1="95" x2="620" y2="95" stroke-width="1"></line>
+            <line class="grid-line" x1="40" y1="160" x2="620" y2="160" stroke-width="1"></line>
+            <text class="axis-label" x="34" y="34" text-anchor="end" font-size="10">30σ</text>
+            <text class="axis-label" x="34" y="99" text-anchor="end" font-size="10">20σ</text>
+            <text class="axis-label" x="34" y="164" text-anchor="end" font-size="10">10σ</text>
+            <path id="csiArea" stroke="none"></path>
+            <path id="csiLine" fill="none" stroke-width="2"></path>
+            <g id="fallMarker">
+              <line id="fallGuide" y1="20" stroke-width="1" stroke-dasharray="3 3"></line>
+              <circle id="fallDot" r="5" stroke-width="2"></circle>
+              <text id="fallLabel" font-size="11" font-weight="600"></text>
+            </g>
+            <g id="hoverLayer" style="opacity:0;">
+              <line id="hoverLine" y1="20" y2="192" stroke-width="1"></line>
+              <circle id="hoverDot" r="4" stroke-width="2"></circle>
+            </g>
+            <rect id="hoverCapture" x="40" y="10" width="580" height="182" fill="transparent"></rect>
+          </svg>
+          <div class="chart-tooltip" id="chartTooltip"></div>
+        </div>
+        <p class="chart-card__caption">가로축: 프레임(약 12Hz) · 세로축: 128개 CSI 값의 프레임 내 표준편차(σ). 평상시에도 σ는 14~18 사이에서 흔들리지만, 낙상 순간에는 순간적으로 28σ 근처까지 튑니다.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="bleed" id="privacy">
+    <div class="page">
+      <section>
+        <div class="section-head">
+          <p class="eyebrow">PRIVACY BY DESIGN</p>
+          <h2>왜 카메라 대신 전파인가요</h2>
+          <p>영상이나 착용 기기 없이도 지킬 수 있어야, 매일 켜두고 매일 착용하게 됩니다.</p>
+        </div>
+        <div class="compare">
+          <div class="compare__col compare__col--old">
+            <h3>CAMERA / WEARABLE</h3>
+            <ul>
+              <li><span class="material-symbols-outlined">visibility_off</span>화장실·침실은 사각지대로 남겨두거나, 사생활을 그대로 노출해야 합니다.</li>
+              <li><span class="material-symbols-outlined">dark_mode</span>야간·역광에서는 화질이 급격히 떨어집니다.</li>
+              <li><span class="material-symbols-outlined">battery_alert</span>손목형 기기는 매일 충전하고 착용해야 하며, 자주 벗어둡니다.</li>
+              <li><span class="material-symbols-outlined">lock_open</span>영상이 유출되면 되돌릴 수 없는 사생활 침해로 이어집니다.</li>
+            </ul>
+          </div>
+          <div class="compare__col compare__col--new">
+            <h3>ETHER‑CARE (Wi‑Fi CSI)</h3>
+            <ul>
+              <li><span class="material-symbols-outlined">check_circle</span>전파는 벽과 문을 어느 정도 통과해, 화장실·어두운 방에서도 그대로 작동합니다.</li>
+              <li><span class="material-symbols-outlined">check_circle</span>조명·시간대와 무관하게 신호 세기는 그대로입니다.</li>
+              <li><span class="material-symbols-outlined">check_circle</span>이미 켜둔 공유기 + 센서 1개면 충분해, 벗거나 충전할 것이 없습니다.</li>
+              <li><span class="material-symbols-outlined">check_circle</span>저장되는 건 영상이 아니라 신호의 통계값(σ)뿐입니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="page">
+    <footer class="footer">
+      <div class="footer__row">
+        <div class="footer__brand">
+          <svg width="16" height="16" viewbox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="13" cy="13" r="2.4" fill="#8b7cf6"/>
+            <path d="M8 13a5 5 0 0 1 10 0" stroke="#ab9fff" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M4.3 13a8.7 8.7 0 0 1 17.4 0" stroke="#4a3f8f" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          Ether‑Care
+        </div>
+        <a class="footer__link" href="https://github.com/nohseungm/ether-care" target="_blank" rel="noopener noreferrer">GitHub 저장소<span class="material-symbols-outlined">arrow_outward</span></a>
+      </div>
+      <p class="footer__stack">ESP32 · Mosquitto(MQTT) · InfluxDB · FastAPI · scikit‑learn · RandomForest</p>
+      <p class="footer__note">Ether‑Care는 해커톤에서 시작된 프로토타입(MVP v1.0)입니다. 현재 지표는 상태별 단일 녹화 세션의 시간순 분할 기준이며, 다양한 사람·환경으로 검증 범위를 넓히는 작업이 진행 중입니다.</p>
+    </footer>
+  </div>
+</main>
+
+<script>
+(function(){
+  var data = [15.2,14.8,15.6,16.1,15.4,14.9,15.8,16.4,15.1,14.7,15.9,16.6,15.3,14.6,15.7,17.2,16.8,15.5,14.9,15.6,16.2,17.8,18.4,17.1,16.3,15.8,19.6,24.3,28.7,26.1,19.8,16.9,15.4,14.8,15.6,16.1,15.3,14.9,15.7,16.3,15.2,14.8,15.5,16.0];
+  var padL=40, padT=20, padR=20, padB=38, w=640, h=230;
+  var plotW = w - padL - padR;
+  var plotH = h - padT - padB;
+  var yMin=10, yMax=30;
+
+  function xFor(i){ return padL + (i/(data.length-1))*plotW; }
+  function yFor(v){ return padT + (1 - (v-yMin)/(yMax-yMin))*plotH; }
+
+  var linePts = data.map(function(v,i){ return xFor(i)+","+yFor(v); });
+  var linePath = "M" + linePts.join(" L");
+  var areaPath = linePath + " L" + xFor(data.length-1) + "," + (padT+plotH) + " L" + xFor(0) + "," + (padT+plotH) + " Z";
+
+  document.getElementById("csiLine").setAttribute("d", linePath);
+  document.getElementById("csiArea").setAttribute("d", areaPath);
+
+  var peakIdx = data.indexOf(Math.max.apply(null, data));
+  var px = xFor(peakIdx), py = yFor(data[peakIdx]);
+  var guide = document.getElementById("fallGuide");
+  guide.setAttribute("x1", px); guide.setAttribute("x2", px); guide.setAttribute("y2", py);
+  var dot = document.getElementById("fallDot");
+  dot.setAttribute("cx", px); dot.setAttribute("cy", py);
+  var label = document.getElementById("fallLabel");
+  label.setAttribute("x", Math.min(px+10, w-118));
+  label.setAttribute("y", py-10);
+  label.textContent = "낙상 감지 · 94%";
+
+  var svg = document.getElementById("csiChart");
+  var hoverLayer = document.getElementById("hoverLayer");
+  var hoverLine = document.getElementById("hoverLine");
+  var hoverDot = document.getElementById("hoverDot");
+  var capture = document.getElementById("hoverCapture");
+  var tooltip = document.getElementById("chartTooltip");
+  var wrap = svg.parentElement;
+
+  function nearestIndex(mx){
+    var i = Math.round(((mx-padL)/plotW)*(data.length-1));
+    return Math.max(0, Math.min(data.length-1, i));
+  }
+
+  capture.addEventListener("mousemove", function(evt){
+    var rect = svg.getBoundingClientRect();
+    var scaleX = w / rect.width;
+    var mx = (evt.clientX - rect.left) * scaleX;
+    var i = nearestIndex(mx);
+    var x = xFor(i), y = yFor(data[i]);
+    hoverLine.setAttribute("x1", x); hoverLine.setAttribute("x2", x);
+    hoverDot.setAttribute("cx", x); hoverDot.setAttribute("cy", y);
+    hoverLayer.style.opacity = 1;
+
+    var scaleXBack = rect.width / w;
+    var scaleYBack = rect.height / h;
+    tooltip.style.left = (x*scaleXBack) + "px";
+    tooltip.style.top = (y*scaleYBack) + "px";
+    tooltip.textContent = "frame " + i + " · σ " + data[i].toFixed(1);
+    tooltip.style.opacity = 1;
+  });
+  capture.addEventListener("mouseleave", function(){
+    hoverLayer.style.opacity = 0;
+    tooltip.style.opacity = 0;
+  });
+})();
+</script>
+</body>
+</html>
