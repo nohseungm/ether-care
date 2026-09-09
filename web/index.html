@@ -73,7 +73,8 @@
     padding:2px 7px; border-radius:999px; margin-left:2px;
   }
   .nav-links{display:flex; align-items:center; gap:28px; font-size:14px; color:var(--text-secondary);}
-  .nav-links a:hover{color:var(--text-primary);}
+  .nav-links a{transition:color .15s ease, font-weight .15s ease;}
+  .nav-links a:hover, .nav-links a.active{color:var(--text-primary); font-weight:600;}
   .nav-cta{
     font-size:13px; font-weight:600; color:var(--ink); background:var(--text-primary);
     padding:9px 16px; border-radius:999px; transition:transform .15s ease, background .15s ease;
@@ -601,6 +602,33 @@
   capture.addEventListener("mouseleave", function(){
     hoverLayer.style.opacity = 0;
     tooltip.style.opacity = 0;
+  });
+})();
+</script>
+
+<script>
+(function(){
+  var sectionIds = ["pipeline", "metrics", "privacy"];
+  var navLinks = {};
+  sectionIds.forEach(function(id){
+    navLinks[id] = document.querySelector('.nav-links a[href="#' + id + '"]');
+  });
+
+  if(!("IntersectionObserver" in window)) return;
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting) return;
+      var id = entry.target.id;
+      sectionIds.forEach(function(sid){
+        if(navLinks[sid]) navLinks[sid].classList.toggle("active", sid === id);
+      });
+    });
+  }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+
+  sectionIds.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) observer.observe(el);
   });
 })();
 </script>
