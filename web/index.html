@@ -406,22 +406,22 @@
           <li class="pipeline__step">
             <span class="step-no">01</span>
             <h3>센서 수집</h3>
-            <p><code>ESP32</code>가 기존 Wi‑Fi 공유기와 통신하며 초당 약 12프레임의 채널 상태 정보(CSI)를 <code>MQTT</code>로 발행합니다.</p>
+            <p><code>ESP32</code>가 기존 공유기와 통신하며 Wi‑Fi CSI 프레임을 초당 11~13회 샘플링합니다. 128개 값은 <code>{"csi_data":[...], "device_id"}</code> JSON으로 묶여 Mosquitto MQTT 브로커의 <code>ether-care/sensor</code> 토픽에 발행됩니다.</p>
           </li>
           <li class="pipeline__step">
             <span class="step-no">02</span>
-            <h3>전파 반사 포착</h3>
-            <p>사람이 움직이면 몸에 반사·산란된 전파가 섞이며, 한 프레임의 <code>csi_0…csi_127</code> 128개 값이 미세하게 흔들립니다.</p>
+            <h3>특징 추출</h3>
+            <p>사람이 움직이면 <code>csi_0…csi_127</code> 값이 흔들립니다. 프레임별 표준편차·피크투피크에 단기(8프레임)·장기(30프레임) 이동 윈도우 통계를 더해 139개 특징을 만듭니다 — 평상시 σ14~18이 낙상 순간 σ28대로 튑니다.</p>
           </li>
           <li class="pipeline__step">
             <span class="step-no">03</span>
             <h3>AI 분류</h3>
-            <p>원본 128값과 단기·장기 변동성 통계를 함께 본 <code>RandomForest</code>가 낙상·보행·앉음·부재 4가지 상태를 구분합니다.</p>
+            <p><code>RandomForestClassifier</code>(트리 150개, class_weight=balanced)가 이 139개 특징으로 낙상·보행·앉음·부재 4가지 상태를 예측합니다. 각 라벨 녹화의 마지막 20%를 시간순으로 떼어 검증한 정확도는 90.29%입니다.</p>
           </li>
           <li class="pipeline__step">
             <span class="step-no">04</span>
             <h3>즉시 알림</h3>
-            <p>낙상 확률이 <code>0.35</code>를 넘으면 다른 상태보다 우선해 보호자 앱으로 즉시 푸시합니다.</p>
+            <p>낙상 확률이 <code>0.35</code>를 넘으면 다른 상태 확률이 더 높아도 낙상으로 우선 판정합니다(recall 0.71→0.83). 판정 결과는 FastAPI <code>/current-status</code>로 노출되고 InfluxDB에 함께 기록됩니다.</p>
           </li>
         </ol>
       </section>
